@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>{% block title %}CyberForum{% endblock %}</title>
+    <style>
+        :root{
+            --neon-pink:#ff2a6d;--neon-blue:#05d9e8;--neon-purple:#9d4edd;--neon-yellow:#f9f002;
+            --bg-dark:#0d0221;--bg-card:#1a1a2e;
+            --scan-gap:2px;--scan-opacity:0.08;--neon-glow:10px;--card-glow:0.2
+        }
+        /* ===== 黑客模式变量覆盖 ===== */
+        body.hacker-mode{
+            --neon-pink:#ff5599;--neon-blue:#00f5ff;--neon-purple:#cc44ff;--neon-yellow:#ffff00;
+            --bg-dark:#050010;--bg-card:#0a051a;
+            --scan-gap:1px;--scan-opacity:0.15;--neon-glow:20px;--card-glow:0.5
+        }
+        *{box-sizing:border-box}
+        body{background:var(--bg-dark);color:#e0e0e0;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;margin:0;-webkit-text-size-adjust:100%}
+        a{color:inherit;text-decoration:none}
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:var(--bg-dark)}
+        ::-webkit-scrollbar-thumb{background:var(--neon-blue);border-radius:4px}
+        ::-webkit-scrollbar-thumb:hover{background:var(--neon-pink)}
+
+        nav{background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(5,217,232,0.3);position:sticky;top:0;z-index:1000}
+        nav .nav-inner{max-width:1200px;margin:0 auto;padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between}
+        nav .logo{font-size:1.4rem;font-weight:bold;letter-spacing:2px}
+        nav .logo span:first-child{color:var(--neon-pink);text-shadow:0 0 var(--neon-glow) var(--neon-pink);animation:hacker-mode 3s infinite}
+        nav .logo span:last-child{color:var(--neon-blue);text-shadow:0 0 var(--neon-glow) var(--neon-blue)}
+        nav .nav-links{display:flex;align-items:center;gap:1rem}
+        nav .nav-links a{font-size:0.95rem}
+        nav .hamburger{display:none;background:none;border:none;cursor:pointer;padding:0.5rem}
+        nav .hamburger span{display:block;width:24px;height:2px;background:var(--neon-blue);margin:5px 0;transition:all 0.3s}
+        .nav-avatar{width:2rem;height:2rem;border-radius:50%;border:1px solid var(--neon-blue);object-fit:cover;vertical-align:middle}
+
+        /* 黑客模式切换按钮 */
+        .btn-glitch{
+            background:none;border:1px solid var(--neon-blue);color:var(--neon-blue);
+            padding:0.3rem 0.8rem;border-radius:4px;font-size:0.8rem;cursor:pointer;
+            transition:all 0.3s;letter-spacing:1px;font-family:monospace
+        }
+        .btn-glitch:hover,.btn-glitch.active{
+            background:var(--neon-blue);color:var(--bg-dark);
+            box-shadow:0 0 15px var(--neon-blue)
+        }
+        body.hacker-mode .btn-glitch{
+            border-color:var(--neon-pink);color:var(--neon-pink);
+            animation:glitch-border 2s infinite
+        }
+        body.hacker-mode .btn-glitch.active{
+            background:var(--neon-pink);color:var(--bg-dark);
+            box-shadow:0 0 20px var(--neon-pink)
+        }
+
+        .btn-neon{padding:0.5rem 1.2rem;background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));color:white;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:all 0.3s;display:inline-block;font-size:0.95rem}
+        .btn-neon:hover{box-shadow:0 0 20px var(--neon-pink);transform:translateY(-2px)}
+        .container{max-width:1200px;margin:0 auto;padding:1.5rem 1rem}
+        .card{background:var(--bg-card);border:1px solid rgba(5,217,232,0.3);border-radius:8px;padding:1.25rem;transition:all 0.3s}
+        .card:hover{border-color:var(--neon-blue);box-shadow:0 0 15px rgba(5,217,232,var(--card-glow))}
+        .neon-text{text-shadow:0 0 5px var(--neon-blue),0 0 10px var(--neon-blue),0 0 20px var(--neon-blue)}
+        .neon-pink{color:var(--neon-pink);text-shadow:0 0 5px var(--neon-pink)}
+        .cyber-input{width:100%;padding:0.75rem;background:rgba(5,217,232,0.1);border:1px solid var(--neon-blue);border-radius:6px;color:white;font-size:1rem;box-sizing:border-box}
+        .cyber-input:focus{outline:none;box-shadow:0 0 10px var(--neon-blue)}
+        .flash-error{background:rgba(255,42,109,0.2);border:1px solid var(--neon-pink);padding:0.75rem;border-radius:6px;margin-bottom:1rem}
+        .flash-success{background:rgba(5,217,232,0.2);border:1px solid var(--neon-blue);padding:0.75rem;border-radius:6px;margin-bottom:1rem}
+        footer{text-align:center;padding:1.5rem;color:#666;font-size:0.8rem;border-top:1px solid rgba(5,217,232,0.2);margin-top:3rem}
+
+        /* 扫描线 */
+        .scanlines{position:relative}
+        .scanlines::after{
+            content:"";position:fixed;top:0;left:0;right:0;bottom:0;
+            background:repeating-linear-gradient(
+                0deg,
+                rgba(0,0,0,var(--scan-opacity)) 0px,
+                rgba(0,0,0,var(--scan-opacity)) 1px,
+                transparent 1px,
+                transparent var(--scan-gap)
+            );
+            pointer-events:none;z-index:9999;transition:all 0.5s
+        }
+
+        /* Glitch 动画 */
+        @keyframes glitch{
+            0%,100%{transform:translate(0);filter:none}
+            20%{transform:translate(-2px,1px);filter:hue-rotate(90deg)}
+            40%{transform:translate(2px,-1px);filter:hue-rotate(-90deg)}
+            60%{transform:translate(-1px,-2px);clip-path:inset(20% 0 30% 0)}
+            80%{transform:translate(1px,2px);clip-path:inset(50% 0 10% 0)}
+        }
+        @keyframes glitch-border{
+            0%,100%{border-color:var(--neon-pink);box-shadow:0 0 5px var(--neon-pink)}
+            25%{border-color:var(--neon-blue);box-shadow:0 0 15px var(--neon-blue);transform:translate(1px,0)}
+            50%{border-color:var(--neon-purple);box-shadow:0 0 10px var(--neon-purple);transform:translate(-1px,0)}
+            75%{border-color:var(--neon-yellow);box-shadow:0 0 8px var(--neon-yellow)}
+        }
+        @keyframes hacker-mode{
+            0%,100%{text-shadow:0 0 var(--neon-glow) var(--neon-pink)}
+            33%{text-shadow:0 0 calc(var(--neon-glow)*1.5) var(--neon-blue),0 0 calc(var(--neon-glow)*2) var(--neon-pink)}
+            66%{text-shadow:0 0 var(--neon-glow) var(--neon-purple)}
+        }
+        .glitching{animation:glitch 0.3s ease-in-out}
+
+        @media (max-width:768px){
+            nav .hamburger{display:block}
+            nav .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(13,2,33,0.98);flex-direction:column;padding:1rem;gap:0.75rem;border-bottom:1px solid rgba(5,217,232,0.3)}
+            nav .nav-links.active{display:flex}
+            nav .nav-links a{padding:0.5rem 0;font-size:1rem}
+            .container{padding:1rem 0.75rem}
+            .card{padding:1rem}
+        }
+        @media (max-width:480px){
+            nav .logo{font-size:1.2rem}
+            .btn-neon{padding:0.4rem 1rem;font-size:0.875rem}
+        }
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded',function(){
+        var ham=document.querySelector('.hamburger');
+        var nav=document.querySelector('.nav-links');
+        if(ham&&nav){ham.addEventListener('click',function(){nav.classList.toggle('active')});}
+        document.addEventListener('click',function(e){if(!e.target.closest('nav')&&nav&&nav.classList.contains('active')){nav.classList.remove('active')}});
+
+        // ===== 黑客模式 =====
+        var btn=document.getElementById('hackerToggle');
+        var body=document.body;
+        if(localStorage.getItem('hackerMode')==='1'){
+            body.classList.add('hacker-mode');
+            if(btn)btn.classList.add('active');
+        }
+        if(btn){
+            btn.addEventListener('click',function(){
+                body.classList.toggle('hacker-mode');
+                var on=body.classList.contains('hacker-mode');
+                btn.classList.toggle('active',on);
+                localStorage.setItem('hackerMode',on?'1':'0');
+                if(on)triggerGlitch();
+            });
+        }
+
+        // 定期 Glitch 效果（黑客模式下每15秒一次）
+        window.glitchInterval=null;
+        function startGlitch(){
+            if(window.glitchInterval)clearInterval(window.glitchInterval);
+            window.glitchInterval=setInterval(function(){
+                if(body.classList.contains('hacker-mode'))triggerGlitch();
+            },15000);
+        }
+        function triggerGlitch(){
+            var targets=document.querySelectorAll('.logo span:first-child,.neon-text,.neon-pink');
+            if(!targets.length)return;
+            var el=targets[Math.floor(Math.random()*targets.length)];
+            el.classList.add('glitching');
+            setTimeout(function(){el.classList.remove('glitching')},400);
+        }
+        startGlitch();
+    });
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="scanlines">
+<nav>
+    <div class="nav-inner">
+        <a href="/" class="logo"><span>CYBER</span><span>FORUM</span></a>
+        <button class="hamburger" aria-label="菜单">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links">
+            <a href="/">首页</a>
+            {% if current_user.is_authenticated %}
+                <a href="/post/new">发帖</a>
+                <a href="/admin/panel">管理</a>
+                <a href="/profile/{{ current_user.username }}"><img src="{{ current_user.avatar }}" class="nav-avatar" onerror="this.style.display='none'"> {{ current_user.username }}</a>
+                <button id="hackerToggle" class="btn-glitch" title="黑客模式">☢ HACK</button>
+                <a href="/logout" class="btn-neon" style="padding:0.3rem 1rem;font-size:0.875rem">登出</a>
+            {% else %}
+                <a href="/login">登录</a>
+                <a href="/register" class="btn-neon">注册</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}
+<div class="container" style="padding:0.75rem 0.75rem"><div class="{{ 'flash-error' if category == 'error' else 'flash-success' }}">{{ message }}</div></div>
+{% endfor %}
+{% endwith %}
+
+<main class="container">
+{% block content %}{% endblock %}
+</main>
+
+<footer>
+    <span class="neon-pink">▲</span> CYBER FORUM <span style="color:var(--neon-blue)">▼</span>
+</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

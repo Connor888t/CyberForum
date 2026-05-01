@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>登录 - CYBER FORUM</title>
+    <style>
+        :root{--neon-pink:#ff2a6d;--neon-blue:#05d9e8;--bg-dark:#0d0221;--bg-card:#1a1a2e}
+        *{box-sizing:border-box}
+        body{background:var(--bg-dark);color:#e0e0e0;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;margin:0;display:flex;align-items:center;justify-content:center;padding:1rem;-webkit-text-size-adjust:100%}
+        .card{background:var(--bg-card);border:1px solid rgba(5,217,232,0.3);border-radius:8px;padding:2rem;width:100%;max-width:400px}
+        h2{text-align:center;margin-bottom:1.5rem;font-size:1.5rem}
+        h2 span:first-child{color:var(--neon-pink);text-shadow:0 0 10px var(--neon-pink)}
+        h2 span:last-child{color:var(--neon-blue);text-shadow:0 0 10px var(--neon-blue)}
+        .form-group{margin-bottom:1rem}
+        label{display:block;margin-bottom:0.5rem;font-size:0.875rem;color:var(--neon-blue)}
+        input{width:100%;padding:0.75rem;background:rgba(5,217,232,0.1);border:1px solid var(--neon-blue);border-radius:6px;color:white;font-size:1rem;box-sizing:border-box}
+        input:focus{outline:none;box-shadow:0 0 10px var(--neon-blue)}
+        button{width:100%;padding:0.75rem;background:linear-gradient(135deg,var(--neon-pink),#9d4edd);color:white;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:all 0.3s;font-size:1rem}
+        button:hover{box-shadow:0 0 20px var(--neon-pink);transform:translateY(-2px)}
+        p{text-align:center;color:#888;margin-top:1rem;font-size:0.9rem}
+        a{color:var(--neon-pink)}
+        .error{background:rgba(255,42,109,0.2);border:1px solid var(--neon-pink);padding:0.75rem;border-radius:6px;margin-bottom:1rem}
+        .success{background:rgba(5,217,232,0.2);border:1px solid var(--neon-blue);padding:0.75rem;border-radius:6px;margin-bottom:1rem}
+        @media (max-width:480px){
+            .card{padding:1.5rem}
+            h2{font-size:1.3rem}
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2><span>CYBER</span> <span>FORUM</span></h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="{{category}}">{{message}}</div>
+        {% endfor %}
+        {% endwith %}
+        <form method="POST">
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" name="username" required placeholder="输入用户名">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" name="password" required placeholder="输入密码">
+            </div>
+            <button type="submit">进入系统</button>
+        </form>
+        <p>还没有账号？<a href="/register">注册</a></p>
+    </div>
+</body>
+</html>

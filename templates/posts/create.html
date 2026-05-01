@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}发布帖子 - CYBER FORUM{% endblock %}
+{% block content %}
+<div style="max-width:600px">
+    <h2 style="font-size:1.6rem;font-weight:bold;margin-bottom:1.5rem">
+        <span class="neon-pink">+</span> <span class="neon-text">发布新帖</span>
+    </h2>
+    <form method="POST" enctype="multipart/form-data" class="card" style="padding:1.5rem">
+        <div style="margin-bottom:1.5rem">
+            <label style="display:block;margin-bottom:0.5rem;color:var(--neon-blue);font-size:0.875rem">标题</label>
+            <input type="text" name="title" required class="cyber-input" placeholder="帖子标题" maxlength="200">
+        </div>
+        <div style="margin-bottom:1.5rem">
+            <label style="display:block;margin-bottom:0.5rem;color:var(--neon-blue);font-size:0.875rem">内容</label>
+            <textarea name="content" required class="cyber-input" rows="6" placeholder="分享你的想法..." style="width:100%"></textarea>
+        </div>
+        <div style="margin-bottom:1.5rem">
+            <label style="display:block;margin-bottom:0.5rem;color:var(--neon-blue);font-size:0.875rem">图片（可选）</label>
+            <input type="file" name="image" accept="image/*" style="color:#888">
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap">
+            <button type="submit" class="btn-neon">发布帖子</button>
+            <a href="/" style="padding:0.5rem 1.5rem;border:1px solid #666;border-radius:6px;display:inline-block;text-align:center">取消</a>
+        </div>
+    </form>
+</div>
+
+<style>
+@media (max-width:480px){
+    h2{font-size:1.3rem!important}
+}
+</style>
+{% endblock %}

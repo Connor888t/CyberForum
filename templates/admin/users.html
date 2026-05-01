@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}用户管理 - CYBER FORUM{% endblock %}
+{% block content %}
+<h2 style="font-size:1.5rem;font-weight:bold;margin-bottom:1.5rem"><span class="neon-pink">👥</span> 用户管理</h2>
+<div class="card" style="overflow:hidden">
+    <table style="width:100%;border-collapse:collapse">
+        <thead>
+            <tr style="border-bottom:1px solid rgba(5,217,232,0.2)">
+                <th style="text-align:left;padding:1rem">用户名</th>
+                <th style="text-align:left;padding:1rem">注册时间</th>
+                <th style="text-align:left;padding:1rem">帖子数</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr style="border-bottom:1px solid rgba(5,217,232,0.1)">
+                <td style="padding:1rem">{{ user.username }}</td>
+                <td style="padding:1rem;color:#888">{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                <td style="padding:1rem">{{ user.posts|length }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

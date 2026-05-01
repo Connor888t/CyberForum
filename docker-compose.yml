@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  cyberforum:
+    image: python:3.11-alpine
+    container_name: cyberforum
+    restart: unless-stopped
+    volumes:
+      - ./app:/app
+      - ./templates:/app/templates
+      - ./static:/app/static
+      - ./uploads:/app/uploads
+      - ./avatars:/app/avatars
+    environment:
+      - SECRET_KEY=cyberpunk-secret-key-for-cyberforum
+      - FLASK_ENV=production
+    working_dir: /app
+    command: sh -c "pip install flask flask-sqlalchemy flask-login pillow && python app.py"
+    networks:
+      - cybernet
+
+  nginx:
+    image: nginx:alpine
+    container_name: cyberforum-nginx
+    restart: unless-stopped
+    ports:
+      - "3050:80"
+      - "3051:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./static:/app/static:ro
+      - ./uploads:/app/uploads:ro
+      - ./avatars:/app/avatars:ro
+    depends_on:
+      - cyberforum
+    networks:
+      - cybernet
+
+networks:
+  cybernet:
+    driver: bridge
